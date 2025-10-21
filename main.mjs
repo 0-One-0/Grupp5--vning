@@ -224,13 +224,13 @@ function changeDeadline(){
   console.log(todos[index]);
 }
 function changesMenu(){
-    console.log("1: Ändra Status");
-    console.log("2: Ändra Namn");
-    console.log("3: Ändra Deadline");
+  console.log("1: Ändra Status");
+  console.log("2: Ändra Namn");
+  console.log("3: Ändra Deadline");
 
-    const indexString = readline.question("Vad vill du göra? ");
-    const index = Number.parseInt(indexString);
+  const indexString = readline.question("Vad vill du göra? ");
+  const index = Number.parseInt(indexString);
 
-    return index;
+  return index;
  
 }
