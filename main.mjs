@@ -55,7 +55,7 @@ const todos = [
 ];
 
 function showMenu() {
-  console.log("Välkommen till todo applikationen!");
+  console.log("\nVälkommen till todo applikationen!");
   console.log("Du har dessa val tillgängliga:");
   console.log("1. Skapa en ny todo");
   console.log("2. Visa alla todos");
@@ -64,10 +64,12 @@ function showMenu() {
   console.log("5. Avsluta applikationen");
 }
 
-showMenu();
+
 
 let keepRunning = true;
 while (keepRunning) {
+  console.clear();
+  showMenu();
   const choiceString = readline.question("Vad vill du göra? ");
   const choice = Number.parseInt(choiceString);
 
@@ -85,19 +87,31 @@ while (keepRunning) {
       break;
     }
     case 4: {
+      console.clear();
+      listTodos();
+      
+      let index;
+      try{
+        index = getValidIndex("Vilken index vill du ändra på ");
+      }catch (err) {
+        console.log("Detta var inte en index");
+        let enter = readline.keyInPause();
+        break;
+      }
+      
       const changesChoice = changesMenu();
 
       switch(changesChoice){
         case 1:{
-            changeStatus();
+            changeStatus(index);
             break;
         }
          case 2:{
-            changeName();
+            changeName(index);
             break;
         }
          case 3:{
-            changeDeadline();
+            changeDeadline(index);
             break;
         }
         default:{
@@ -150,6 +164,19 @@ function listTodos() {
     console.log("    Status: " + todo.status);
   }
 }
+//Visa en todo
+function listOneTodo(index){
+
+  const todo = todos[index];
+
+  console.log("\nUppdaterad todo ---------------------------");
+  console.log(" - (" + index + ") " + todo.title);
+  console.log("    Deadline: " + formatDate(todo.deadline));
+  console.log("    Status: " + todo.status);
+  console.log("--------------------------------------------");
+
+  let enter = readline.keyInPause();
+}
 
 function formatDate(date) {
   const year = date.getFullYear();
@@ -174,44 +201,33 @@ function deleteTodo() {
 }
 
 // Tillägg
-function changeStatus(){
-    const indexString = readline.question("Vilken index vill du ändra status på? ");
-    const index = Number.parseInt(indexString);
-
-    const statusString = readline.question("Ändra status, 1 (påbörjade) 2 (avklarade) ");
-    const status = Number.parseInt(statusString);
+function changeStatus(index){
+    const status = getNumber("Ändra status, 1 (påbörjade) 2 (avklarade) ");
 
     if (status === 1){
         
         todos[index].status = "påbörjad"
-        console.log(todos[index]);
+        listOneTodo(index);
 
     } else if (status === 2){
         
         todos[index].status = "avklarad"
-        console.log(todos[index]);
+        listOneTodo(index);
     }
     else{
         console.log("Detta är inte ett val ")
     }
+    let enter = readline.keyInPause();
     
-
 }
 
-function changeName(){
-
-  const indexString = readline.question("Vilken index vill du ändra namn/titel på? ");
-  const index = Number.parseInt(indexString);
-
+function changeName(index){
   const nameString = readline.question("Skriv nya namnet: ");
     
   todos[index].title = nameString;
-  console.log(todos[index]);
+  listOneTodo(index);
 }
-function changeDeadline(){
-  const indexString = readline.question("Vilken index vill du ändra deadline på? ");
-  const index = Number.parseInt(indexString);
-
+function changeDeadline(index){
   const deadlineString = readline.question(
     "När ska denna todo göras? (ÅÅÅÅ-MM-DD) "
   );
@@ -221,16 +237,38 @@ function changeDeadline(){
   const deadline = new Date(deadlineTime);
 
   todos[index].deadline = deadline;
-  console.log(todos[index]);
+  listOneTodo(index);
 }
 function changesMenu(){
   console.log("1: Ändra Status");
   console.log("2: Ändra Namn");
   console.log("3: Ändra Deadline");
 
-  const indexString = readline.question("Vad vill du göra? ");
-  const index = Number.parseInt(indexString);
+  const index = getNumber("Vad vill du göra? ");
 
   return index;
  
+}
+
+function getNumber(message){
+  
+  const numString = readline.question(message);
+  const num = Number.parseInt(numString);
+  
+  return num;
+}
+function getValidIndex(message){
+  
+  const numString = readline.question(message);
+  const num = Number.parseInt(numString);
+
+  if (num < 0 || num >= todos.length){
+    throw new Error("index out of range");
+  }
+  
+  if(Number.isNaN(num)){
+    throw new Error("Not a number");
+  }
+  
+  return num;
 }
